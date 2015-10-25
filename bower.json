@@ -1,0 +1,21 @@
+{
+  "name": "snacky",
+  "version": "0.0.0",
+  "authors": [
+    "Ross Brown <albatrocity@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Snap.svg": "~0.4.1",
+    "eventEmitter": "~4.3.0",
+    "es6-module-loader": "~0.17.8"
+  }
+}
