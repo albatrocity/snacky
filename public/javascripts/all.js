@@ -497,32 +497,6 @@ if(1==arguments.length){if(d.is(a,"object")){for(var f in a)a[t](f)&&this.data(f
 
 "use strict";
 
-// const myAudio = document.querySelector('audio');
-// const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-// let source = audioCtx.createMediaElementSource(myAudio);
-// let analyzeEvent = new Event('analyze');
-//
-// class AudioAnalyser extends EventEmitter {
-//   constructor(audioCtx, source) {
-//     super();
-//     this.analyser = audioCtx.createAnalyser();
-//     this.analyser.connect(audioCtx.destination);
-//     this.analyser.fftSize = 2048;
-//
-//     const bufferLength = this.analyser.frequencyBinCount;
-//     this.dataArray = new Uint8Array(bufferLength)
-//     source.connect(this.analyser);
-//     let intervalID = window.setInterval(this.analyze.bind(this), 20);
-//   }
-//   analyze() {
-//     this.analyser.getByteFrequencyData(an.dataArray);
-//     this.emitEvent('analyze');
-//   }
-// }
-//
-// let an = new AudioAnalyser(audioCtx, source);
-"use strict";
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -541,7 +515,6 @@ Snap.load("/images/fries.svg", function (svg) {
   fry1 = svg.select("#fry_1");
   fry2 = svg.select("#fry_2");
   fry3 = svg.select("#fry_3");
-  fry1.attr({ x: 500, y: 500 });
   s.append(fry1);
   s.append(fry2);
   s.append(fry3);
@@ -566,7 +539,7 @@ var AudioAnalyser = (function (_EventEmitter) {
     var bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(bufferLength);
     source.connect(this.analyser);
-    var intervalID = window.setInterval(this.analyze.bind(this), 2000);
+    var intervalID = window.setInterval(this.analyze.bind(this), 30);
   }
 
   _createClass(AudioAnalyser, [{
@@ -585,22 +558,8 @@ var an = new AudioAnalyser(audioCtx, source);
 an.addListener('analyze', handleAnalyzation);
 
 function handleAnalyzation() {
-  console.log('analyze');
-  console.log(arguments);
+  fry1.animate({ transform: "s" + arguments[50] / 50 + "r0,0,0" }, 30);
+  fry2.animate({ transform: "s" + arguments[49] / 50 + "r0,0,0" }, 30);
+  fry3.animate({ transform: "s" + arguments[51] / 50 + "r0,0,0" }, 30);
 }
-
-//
-// const animateFries = function(fry1, fry2, fry3, cb) {
-//   console.log('animate');
-//   let dur = 2000
-//   fry1.animate({
-//     transform: "r" + [360, [144, 147]]
-//   }, dur, null, cb)
-//   fry2.animate({
-//     transform: "r" + [360, [144, 147]]
-//   }, dur, null, cb)
-//   fry3.animate({
-//     transform: "r" + [8, [10, 150]]
-//   }, dur, null, cb);
-// }
 //# sourceMappingURL=all.js.map
