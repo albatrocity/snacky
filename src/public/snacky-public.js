@@ -1,3 +1,6 @@
+// What is this, 2007? This is all in one file because I'm too lazy to
+// hook up module loading for Babel.
+
 let bandSVG = Snap("#band_svg");
 let titleSVG = Snap("#title_svg");
 let coverSVG = Snap("#cover");
@@ -26,7 +29,7 @@ Snap.load("/images/snacky.svg", function(svg) {
 
 let mascot;
 const mascotCoords = {
-  scale: 3.7,
+  scale: 3.6,
   t1: 440,
   t2: 470,
   r1: 0,
@@ -97,10 +100,31 @@ class AudioAnalyser extends EventEmitter {
 let currentTrack;
 let audioState;
 let currentAnalyser;
+let dancing = true;
 const $playControl = document.querySelector("#playPause");
 const $nextControl = document.querySelector("#playNext");
-const $nowPlaying = document.querySelector("#nowPlaying");
+const $nowPlaying  = document.querySelector("#nowPlaying");
+const $toggleDance = document.querySelector("#toggleDance");
 $nextControl.style.display = 'none';
+
+$toggleDance.addEventListener('click', toggleDancing);
+
+function toggleDancing(e) {
+  if (e) {e.preventDefault();}
+  if (dancing) {
+    dancing = false;
+    if (currentAnalyser) {
+      currentAnalyser.removeListener('analyze', animate);
+    }
+    $toggleDance.innerHTML = "Start dancing";
+  } else {
+    dancing = true;
+    if (currentAnalyser) {
+      currentAnalyser.addListener('analyze', animate);
+    }
+    $toggleDance.innerHTML = "Stop dancing";
+  }
+}
 
 function displayTrackInfo(track) {
   $nowPlaying.innerHTML = `<h4>${tracks.indexOf(track)+1}. ${track.title}</h4>`
@@ -109,7 +133,9 @@ function displayTrackInfo(track) {
 function queueTrack(track) {
   let extension;
   if (audio) {audio.pause(); audioState = 'paused'};
+  displayLoading();
   audio = new Audio();
+  window.audio = audio;
   if (audio.canPlayType("audio/mp3")) {
     extension = ".mp3";
   } else if (audio.canPlayType("audio/ogg")) {
@@ -121,14 +147,39 @@ function queueTrack(track) {
     currentAnalyser.removeListener('analyze', animate);
   };
   currentAnalyser = new AudioAnalyser(audioCtx);
-  currentAnalyser.addListener('analyze', animate);
-  displayTrackInfo(track);
-  audio.oncanplaythrough = function() {
-    audio.play();
-    audioState = 'playing';
+  if (dancing) {
+    currentAnalyser.addListener('analyze', animate);
   }
-  audio.addEventListener('ended', nextTrack);
+  displayTrackInfo(track);
+  // audio.addEventListener('ended', nextTrack);
+  // audio.addEventListener('canplaythrough', playAudio);
+  // audio.addEventListener('waiting', displayLoading);
+};
+
+function displayLoading() {
+  $playControl.innerHTML = "...";
+  audioState = 'loading';
 }
+
+function fadeIn() {
+  let fadePoint = 0.5;
+  let fadeAudio = setInterval(function () {
+    if ((audio.currentTime < fadePoint) && (audio.volume != 1.0)) {
+        audio.volume += 0.1;
+    }
+    if (audio.volume === 1.0) {
+        clearInterval(fadeAudio);
+    }
+  }, 200);
+}
+
+function playAudio() {
+  if(!audio) {return};
+  audio.volume = 0;
+  audio.play();
+  audioState = 'playing';
+  $playControl.innerHTML = "Pause";
+};
 
 function nextTrack() {
   if(typeof currentTrack === 'undefined'){
@@ -141,7 +192,6 @@ function nextTrack() {
     audioState = 'paused';
   } else {
     queueTrack(tracks[currentTrack]);
-    $playControl.innerHTML = "Pause";
   }
   $nextControl.style.display = 'inline';
 }
@@ -190,7 +240,7 @@ function animate() {
     } else {
       hOffset = index - (anData[freq]/10)/(offIndex*0.5);
     }
-    letter.animate({transform: "s"+ scaled + "t"+ hOffset + "," + 0}, 10);
+    letter.animate({transform: "s"+ scaled + "t"+ hOffset + "," + 0}, 20);
   });
   snacky_letters.forEach(function(letter) {
     let index = snacky_letters.indexOf(letter)
@@ -201,7 +251,7 @@ function animate() {
     let rAngle = (index + anData[freq] - 50);
     if (rAngle < -30) {rAngle = -30};
     if (rAngle > 30) {rAngle = 30};
-    letter.animate({transform: "s"+ scaled + "r"+rAngle + "t10,10"}, 15);
+    letter.animate({transform: "s"+ scaled + "r"+rAngle + "t10,10"}, 10);
   });
 
 
@@ -219,7 +269,9 @@ function scaleMascot(modifier) {
   let t2 = mascotCoords.t2 - modifier;
   let r1 = mascotCoords.r1 - modifier;
   if (modifier > 10) {
+    // If there's a peak in the frequency...
     if (Math.abs(currentMascotRotate - r1) > 1.1) {
+      // swith dancing directions
       if (mascotRotateDir === 1) {
         mascotRotateDir = -1;
       } else {
