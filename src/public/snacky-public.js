@@ -1,23 +1,14 @@
-let s = Snap(800, 800);
-s.attr({ viewBox: "-20 -100 600 600" })
+let bandSVG = Snap("#band_svg");
+let titleSVG = Snap("#title_svg");
+bandSVG.attr({ viewBox: "-30 -30 380 230" })
+titleSVG.attr({ viewBox: "-30 -100 240 200" })
 
-let fry1, fry2, fry3
-
-Snap.load("/images/fries.svg", function(svg) {
-  fry1 = svg.select("#fry_1");
-  fry2 = svg.select("#fry_2");
-  fry3 = svg.select("#fry_3");
-  s.append(fry1);
-  s.append(fry2);
-  s.append(fry3);
-
-});
 
 let vol1_letters = ["vol1_v", "vol1_o", "vol1_l", "vol1_1"];
 Snap.load("/images/vol1.svg", function(svg) {
   vol1_letters = vol1_letters.map(function(id, i) {
     let lt = svg.select("#" + id);
-    s.append(lt);
+    titleSVG.append(lt);
     return lt;
   });
   let an = new AudioAnalyser(audioCtx, source);
@@ -30,7 +21,7 @@ let snacky_letters =  ["snacky_s", "snacky_n", "snacky_a", "snacky_c",
 Snap.load("/images/snacky.svg", function(svg) {
   snacky_letters = snacky_letters.map(function(id, i) {
     let lt = svg.select("#" + id);
-    s.append(lt);
+    bandSVG.append(lt);
     return lt;
   });
 });
@@ -62,20 +53,49 @@ class AudioAnalyser extends EventEmitter {
 function animate() {
   let anData = arguments;
   vol1_letters.forEach(function(letter) {
-    let freq = vol1_letters.indexOf(letter) + 500;
+    let index = vol1_letters.indexOf(letter);
+    let offIndex = index+1;
+    let freq = index + 50;
     let scaled = anData[freq]/100
     if (scaled < 0.3) {scaled = 0.3};
-    letter.animate({transform: "s"+ scaled + "r0,0,0"}, 10);
+
+    let hOffset = 0;
+    if (index+1 > (vol1_letters.length/2)) {
+      hOffset = index + (anData[freq]/10)/(offIndex*0.5);
+    } else {
+      hOffset = index - (anData[freq]/10)/(offIndex*0.5);
+    }
+    letter.animate({transform: "s"+ scaled + "t"+ hOffset + "," + 0}, 10);
   });
   snacky_letters.forEach(function(letter) {
     let index = snacky_letters.indexOf(letter)
-    let freq = index + 200;
+    let freq = index + 300;
     let scaled = anData[freq]/100
     if (scaled < 0.5) {scaled = 0.5};
     if (scaled > 1.5) {scaled = 1.5};
     let rAngle = (index + anData[freq] - 50);
     if (rAngle < -30) {rAngle = -30};
     if (rAngle > 30) {rAngle = 30};
-    letter.animate({transform: "s"+ scaled + "r"+rAngle}, 10);
+    letter.animate({transform: "s"+ scaled + "r"+rAngle + "t10,10"}, 10);
   });
+
+  let snareLevel = anData[250];
+  incrementBgColor(snareLevel);
+}
+
+let colors = [
+  "#be4f5e", "#ffdd65", "#0b7347", "#fe8721", "#d5cec4", "#e35d0c",
+  "#7d464b", "#ece6da"
+];
+
+let colorIndex = 0;
+let currentColorValue = 0;
+function incrementBgColor(value) {
+  // console.log(Math.abs(currentColorValue - value));
+  if (value > 85 && Math.abs(value - currentColorValue) > 25) {
+    colorIndex+=1;
+    if (colorIndex === colors.length ) {colorIndex = 0};
+    document.querySelector('body').style.backgroundColor = colors[colorIndex];
+  }
+  currentColorValue = value;
 }
