@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var auth = require('basic-auth')
 
 var routes = require('./routes/index');
 var tracks = require('./routes/tracks');
@@ -23,6 +24,18 @@ app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
+
+app.use(function(req,res,next) {
+  var credentials = auth(req);
+  if (!credentials || credentials.name !== process.env['USERNAME'] ||
+  credentials.pass !== process.env['PASSWORD']) {
+    res.statusCode = 401;
+    res.setHeader('WWW-Authenticate', 'Basic realm="example"');
+    res.end('Access denied');
+  } else {
+    next();
+  }
+})
 
 app.use('/', routes);
 app.use('/tracks', tracks);

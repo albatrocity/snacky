@@ -1,6 +1,14 @@
 // What is this, 2007? This is all in one file because I'm too lazy to
 // hook up module loading for Babel.
 
+// Gotta check for Safari because getByteFrequencyData returns all 0s :/
+// Desktop Safari is fixed, but I guess not iOS?
+// https://bugs.webkit.org/show_bug.cgi?id=125031
+const ua = navigator.userAgent
+const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+const webkit = !!ua.match(/WebKit/i);
+const iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
+
 let bandSVG = Snap("#band_svg");
 let titleSVG = Snap("#title_svg");
 let coverSVG = Snap("#cover");
@@ -46,31 +54,31 @@ Snap.load("/images/mascot_vector.svg", function(svg) {
 const tracks = [
   {
     title: "Halftime Show",
-    src: "/tracks/01_Halftime%20Show"
+    src: "01_Halftime%20Show"
   },
   {
     title: "You're Preapproved!",
-    src: "/tracks/02_You're%20Preapproved!"
+    src: "02_You're%20Preapproved!"
   },
   {
     title: "Le Voyage Vers le Canape",
-    src: "/tracks/03_Le%20Voyage%20Vers%20le%20Canape"
+    src: "03_Le%20Voyage%20Vers%20le%20Canape"
   },
   {
     title: "Nugget",
-    src: "/tracks/04_Nugget"
+    src: "04_Nugget"
   },
   {
     title: "I Forgot to Get Toilet Paper",
-    src: "/tracks/05_I%20Forgot%20to%20Get%20Toilet%20Paper"
+    src: "05_I%20Forgot%20to%20Get%20Toilet%20Paper"
   },
   {
     title: "Ryan's Lament",
-    src: "/tracks/06_Ryan's%20Lament"
+    src: "06_Ryan's%20Lament"
   },
   {
     title: "Warm Face After a Cold Day",
-    src: "/tracks/07_Warm%20Face%20After%20a%20Cold%20Day"
+    src: "07_Warm%20Face%20After%20a%20Cold%20Day"
   }
 ];
 
@@ -81,15 +89,15 @@ let analyzeEvent = new Event('analyze');
 class AudioAnalyser extends EventEmitter {
   constructor(audioCtx, source) {
     super();
-    source = audioCtx.createMediaElementSource(audio);
+    this.source = source = audioCtx.createMediaElementSource(audio);
     this.analyser = audioCtx.createAnalyser();
+    this.analyser.connect(audioCtx.destination);
     this.analyser.fftSize = 2048;
-    //
+
     const bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(bufferLength)
     source.connect(this.analyser);
-    this.analyser.connect(audioCtx.destination);
-    let intervalID = window.setInterval(this.analyze.bind(this), 30);
+    let intervalID = window.setInterval(this.analyze.bind(this), 50);
   }
   analyze() {
     this.analyser.getByteFrequencyData(this.dataArray);
@@ -100,12 +108,32 @@ class AudioAnalyser extends EventEmitter {
 let currentTrack;
 let audioState;
 let currentAnalyser;
-let dancing = true;
+let dancing        = true;
 const $playControl = document.querySelector("#playPause");
 const $nextControl = document.querySelector("#playNext");
 const $nowPlaying  = document.querySelector("#nowPlaying");
 const $toggleDance = document.querySelector("#toggleDance");
+const $fallback    = document.querySelector("#fallback");
+const $fallbackCt  = document.querySelector("#fallback .content");
 $nextControl.style.display = 'none';
+$fallback.style.display = 'none';
+
+if (iOSSafari) {
+  $toggleDance.style.display = 'none';
+  $fallback.style.display = 'block';
+  $fallbackCt.innerHTML = `
+    <h2>Hey there, Safari user!</h2>
+    <p>There's some fun visualizations to go along with the audio that unfortunately
+      don't work on iOS Safari yet. Try this page in Chrome if you wanna see cool stuff,
+      otherwise enjoy the tunes.
+    </p>
+    <a href='#' id='closeFallback'>Close</a>
+  `;
+  document.querySelector('#closeFallback').addEventListener('click', function(e) {
+    e.preventDefault();
+    $fallbackCt.style.display = 'none';
+  })
+}
 
 $toggleDance.addEventListener('click', toggleDancing);
 
@@ -135,12 +163,14 @@ function queueTrack(track) {
   if (audio) {audio.pause(); audioState = 'paused'};
   displayLoading();
   audio = new Audio();
+  audio.crossOrigin = true;
   if (audio.canPlayType("audio/mp3")) {
     extension = ".mp3";
   } else if (audio.canPlayType("audio/ogg")) {
     extension = ".ogg";
   }
-  audio.setAttribute("src", track.src + extension);
+  s3URL = "https://s3.amazonaws.com/ross-brown/snacky/";
+  audio.setAttribute("src", s3URL + track.src + extension);
   audio.load();
   if (currentAnalyser) {
     currentAnalyser.removeListener('analyze', animate);
@@ -197,7 +227,7 @@ function nextTrack() {
 }
 
 function pauseTrack() {
-  $playControl.innerHTML = "&#9654";
+  $playControl.innerHTML = "Play";
   audio.pause();
   audioState = 'paused';
 }
