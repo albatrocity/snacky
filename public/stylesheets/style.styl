@@ -11,6 +11,20 @@ body
 a
   color: #00B7FF
 
+#overlay
+  position: absolute
+  width: 100%
+  height: 100%
+
+#controls
+  position: relative
+  width: 40%
+  margin: 0 auto
+
+#playPause, #nextTrack
+  z-index: 2
+  position: relative
+
 svg
   position: relative
   display: block
@@ -22,9 +36,18 @@ svg
   margin: 0 auto
   position: absolute
   top: 20%
-  background: url("/images/snacky_vol1_cover.jpg") center center no-repeat
+  // background: url("/images/snacky_vol1_cover.jpg") center center no-repeat
   background-size: contain
   z-index: 0
+
+#mascot
+  background yellow
+  width: 400px
+  height: 400px
+  display: block
+  position: absolute
+  left: 0
+  top: 0
 
 #band_svg
   margin: 0 auto

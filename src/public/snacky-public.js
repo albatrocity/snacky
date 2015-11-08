@@ -1,8 +1,8 @@
 let bandSVG = Snap("#band_svg");
 let titleSVG = Snap("#title_svg");
+let coverSVG = Snap("#cover");
 bandSVG.attr({ viewBox: "-30 -30 380 230" })
 titleSVG.attr({ viewBox: "-30 -100 240 200" })
-
 
 let vol1_letters = ["vol1_v", "vol1_o", "vol1_l", "vol1_1"];
 Snap.load("/images/vol1.svg", function(svg) {
@@ -11,8 +11,6 @@ Snap.load("/images/vol1.svg", function(svg) {
     titleSVG.append(lt);
     return lt;
   });
-  let an = new AudioAnalyser(audioCtx, source);
-  an.addListener('analyze', animate);
 });
 
 let snacky_letters =  ["snacky_s", "snacky_n", "snacky_a", "snacky_c",
@@ -26,15 +24,61 @@ Snap.load("/images/snacky.svg", function(svg) {
   });
 });
 
-const myAudio = document.querySelector('audio');
+let mascot;
+const mascotCoords = {
+  scale: 3.8,
+  t1: 400,
+  t2:470,
+  r1: 0,
+  r2: 0
+};
+Snap.load("/images/mascot_vector.svg", function(svg) {
+  mascot = svg.select("#mascot");
+  mascot.transform("s4,t10,50");
+  coverSVG.append(svg);
+  scaleMascot();
+});
+
+
+const tracks = [
+  {
+    title: "Halftime Show",
+    src: "http://ross-brown.s3.amazonaws.com/01_Halftime%20Show"
+  },
+  {
+    title: "You're Preapproved!",
+    src: "http://ross-brown.s3.amazonaws.com/02_You're%20Preapproved!"
+  },
+  {
+    title: "Le Voyage Vers le Canape",
+    src: "http://ross-brown.s3.amazonaws.com/03_Le%20Voyage%20Vers%20le%20Canape"
+  },
+  {
+    title: "Nugget",
+    src: "http://ross-brown.s3.amazonaws.com/04_Nugget"
+  },
+  {
+    title: "I Forgot to Get Toilet Paper",
+    src: "http://ross-brown.s3.amazonaws.com/05_I%20Forgot%20to%20Get%20Toilet%20Paper"
+  },
+  {
+    title: "Ryan's Lament",
+    src: "http://ross-brown.s3.amazonaws.com/06_Ryan's%20Lament"
+  },
+  {
+    title: "Warm Face After a Cold Day",
+    src: "http://ross-brown.s3.amazonaws.com/07_Warm%20Face%20After%20a%20Cold%20Day"
+  }
+];
+
+let audio;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let source = audioCtx.createMediaElementSource(myAudio);
 let analyzeEvent = new Event('analyze');
 
 class AudioAnalyser extends EventEmitter {
   constructor(audioCtx, source) {
     super();
-    // vol1_letters[1].animate({transform: "s"+ 20 + "r0,0,0"}, 4000);
+    this.source = source = audioCtx.createMediaElementSource(audio);
     this.analyser = audioCtx.createAnalyser();
     this.analyser.connect(audioCtx.destination);
     this.analyser.fftSize = 2048;
@@ -50,6 +94,85 @@ class AudioAnalyser extends EventEmitter {
   }
 }
 
+let currentTrack;
+let audioState;
+let currentAnalyser;
+const $playControl = document.querySelector("#playPause");
+const $nextControl = document.querySelector("#playNext");
+const $nowPlaying = document.querySelector("#nowPlaying");
+
+function displayTrackInfo(track) {
+  $nowPlaying.innerHTML = `<h3>${track.title}</h3>`
+}
+
+function queueTrack(track) {
+  let extension;
+  if (audio) {audio.pause(); audioState = 'paused'};
+  audio = new Audio();
+  if (audio.canPlayType("audio/mp3")) {
+    extension = ".mp3";
+  } else if (audio.canPlayType("audio/ogg")) {
+    extension = ".ogg";
+  }
+  audio.setAttribute("src", track.src + extension);
+  audio.load();
+  if (currentAnalyser) {
+    currentAnalyser.removeListener('analyze', animate);
+  };
+  currentAnalyser = new AudioAnalyser(audioCtx);
+  currentAnalyser.addListener('analyze', animate);
+  displayTrackInfo(track);
+  audio.oncanplaythrough = function() {
+    audio.play();
+    audioState = 'playing';
+  }
+  audio.addEventListener('ended', nextTrack);
+}
+
+function nextTrack() {
+  if(typeof currentTrack === 'undefined'){
+    currentTrack = 0;
+  } else {
+    currentTrack++;
+  };
+  if (currentTrack+1 === tracks.length ) {
+    currentTrack = 0;
+    audioState = 'paused';
+  } else {
+    queueTrack(tracks[currentTrack]);
+    $playControl.innerHTML = "Pause";
+  }
+}
+
+function pauseTrack() {
+  $playControl.innerHTML = "Play";
+  audio.pause();
+  audioState = 'paused';
+}
+
+function resumeTrack() {
+  $playControl.innerHTML = "Pause";
+  audio.play();
+  audioState = 'playing';
+}
+
+$playControl.addEventListener("click", function(e) {
+  e.preventDefault();
+  if (audioState == 'playing') {
+    pauseTrack();
+  } else if (audioState == 'paused') {
+    resumeTrack();
+  } else {
+    nextTrack();
+  }
+});
+
+$nextControl.addEventListener("click", function(e) {
+  e.preventDefault();
+  nextTrack();
+})
+
+
 function animate() {
   let anData = arguments;
   vol1_letters.forEach(function(letter) {
@@ -57,10 +180,10 @@ function animate() {
     let offIndex = index+1;
     let freq = index + 50;
     let scaled = anData[freq]/100
-    if (scaled < 0.3) {scaled = 0.3};
+    if (scaled < 0.5) {scaled = 0.5};
 
     let hOffset = 0;
-    if (index+1 > (vol1_letters.length/2)) {
+    if (index > (vol1_letters.length/2)) {
       hOffset = index + (anData[freq]/10)/(offIndex*0.5);
     } else {
       hOffset = index - (anData[freq]/10)/(offIndex*0.5);
@@ -79,8 +202,37 @@ function animate() {
     letter.animate({transform: "s"+ scaled + "r"+rAngle + "t10,10"}, 10);
   });
 
+  // let scaled = anData[100]/10;
+
   let snareLevel = anData[250];
+  scaleMascot(snareLevel/10);
   incrementBgColor(snareLevel);
+}
+
+let currentMascotRotate = 0;
+let mascotRotateDir = 1;
+function scaleMascot(modifier) {
+  modifier = modifier || 0;
+  let scale = mascotCoords.scale + (modifier/90);
+  let t1 = mascotCoords.t1 - modifier;
+  let t2 = mascotCoords.t2 - modifier;
+  let r1 = mascotCoords.r1 - modifier;
+  // console.log(Math.abs(currentMascotRotate - r1) > 0.2);
+  if (modifier > 10) {
+    // console.log(modifier);
+    console.log(Math.abs(currentMascotRotate - r1));
+    if (Math.abs(currentMascotRotate - r1) > 1.3) {
+      if (mascotRotateDir === 1) {
+        mascotRotateDir = -1;
+      } else {
+        mascotRotateDir = 1;
+      };
+    }
+    currentMascotRotate = r1
+  }
+  r1 = r1*mascotRotateDir;
+  let string = `s${scale},t${t1},${t2}r${r1};`
+  mascot.animate({transform: string}, 30);
 }
 
 let colors = [
@@ -91,7 +243,6 @@ let colors = [
 let colorIndex = 0;
 let currentColorValue = 0;
 function incrementBgColor(value) {
-  // console.log(Math.abs(currentColorValue - value));
   if (value > 85 && Math.abs(value - currentColorValue) > 25) {
     colorIndex+=1;
     if (colorIndex === colors.length ) {colorIndex = 0};
