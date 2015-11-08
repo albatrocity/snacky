@@ -46,31 +46,31 @@ Snap.load("/images/mascot_vector.svg", function(svg) {
 const tracks = [
   {
     title: "Halftime Show",
-    src: "http://ross-brown.s3.amazonaws.com/01_Halftime%20Show"
+    src: "/tracks/01_Halftime%20Show"
   },
   {
     title: "You're Preapproved!",
-    src: "http://ross-brown.s3.amazonaws.com/02_You're%20Preapproved!"
+    src: "/tracks/02_You're%20Preapproved!"
   },
   {
     title: "Le Voyage Vers le Canape",
-    src: "http://ross-brown.s3.amazonaws.com/03_Le%20Voyage%20Vers%20le%20Canape"
+    src: "/tracks/03_Le%20Voyage%20Vers%20le%20Canape"
   },
   {
     title: "Nugget",
-    src: "http://ross-brown.s3.amazonaws.com/04_Nugget"
+    src: "/tracks/04_Nugget"
   },
   {
     title: "I Forgot to Get Toilet Paper",
-    src: "http://ross-brown.s3.amazonaws.com/05_I%20Forgot%20to%20Get%20Toilet%20Paper"
+    src: "/tracks/05_I%20Forgot%20to%20Get%20Toilet%20Paper"
   },
   {
     title: "Ryan's Lament",
-    src: "http://ross-brown.s3.amazonaws.com/06_Ryan's%20Lament"
+    src: "/tracks/06_Ryan's%20Lament"
   },
   {
     title: "Warm Face After a Cold Day",
-    src: "http://ross-brown.s3.amazonaws.com/07_Warm%20Face%20After%20a%20Cold%20Day"
+    src: "/tracks/07_Warm%20Face%20After%20a%20Cold%20Day"
   }
 ];
 
@@ -81,14 +81,15 @@ let analyzeEvent = new Event('analyze');
 class AudioAnalyser extends EventEmitter {
   constructor(audioCtx, source) {
     super();
-    this.source = source = audioCtx.createMediaElementSource(audio);
+    // this.source = audioCtx.createMediaElementSource(audio);
+    source = audioCtx.createMediaElementSource(audio);
     this.analyser = audioCtx.createAnalyser();
-    this.analyser.connect(audioCtx.destination);
     this.analyser.fftSize = 2048;
-
+    //
     const bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(bufferLength)
     source.connect(this.analyser);
+    this.analyser.connect(audioCtx.destination);
     let intervalID = window.setInterval(this.analyze.bind(this), 30);
   }
   analyze() {
@@ -135,7 +136,6 @@ function queueTrack(track) {
   if (audio) {audio.pause(); audioState = 'paused'};
   displayLoading();
   audio = new Audio();
-  window.audio = audio;
   if (audio.canPlayType("audio/mp3")) {
     extension = ".mp3";
   } else if (audio.canPlayType("audio/ogg")) {
@@ -151,9 +151,12 @@ function queueTrack(track) {
     currentAnalyser.addListener('analyze', animate);
   }
   displayTrackInfo(track);
-  // audio.addEventListener('ended', nextTrack);
-  // audio.addEventListener('canplaythrough', playAudio);
-  // audio.addEventListener('waiting', displayLoading);
+  audio.addEventListener('ended', nextTrack);
+  audio.addEventListener('canplaythrough', playAudio);
+  audio.addEventListener('waiting', displayLoading);
+  // audio.addEventListener('progress', function(e) {
+  //   console.log(e);
+  // });
 };
 
 function displayLoading() {
@@ -164,19 +167,21 @@ function displayLoading() {
 function fadeIn() {
   let fadePoint = 0.5;
   let fadeAudio = setInterval(function () {
+    console.log(audio.volume);
     if ((audio.currentTime < fadePoint) && (audio.volume != 1.0)) {
         audio.volume += 0.1;
     }
     if (audio.volume === 1.0) {
         clearInterval(fadeAudio);
     }
-  }, 200);
+  }, 20);
 }
 
 function playAudio() {
   if(!audio) {return};
-  audio.volume = 0;
+  // audio.volume = 0;
   audio.play();
+  // fadeIn();
   audioState = 'playing';
   $playControl.innerHTML = "Pause";
 };
@@ -268,7 +273,7 @@ function scaleMascot(modifier) {
   let t1 = mascotCoords.t1 - modifier;
   let t2 = mascotCoords.t2 - modifier;
   let r1 = mascotCoords.r1 - modifier;
-  if (modifier > 10) {
+  if (modifier > 9.2) {
     // If there's a peak in the frequency...
     if (Math.abs(currentMascotRotate - r1) > 1.1) {
       // swith dancing directions
@@ -293,7 +298,7 @@ let colors = [
 let colorIndex = 0;
 let currentColorValue = 0;
 function incrementBgColor(value) {
-  if (value > 85 && Math.abs(value - currentColorValue) > 25) {
+  if (value > 80 && Math.abs(value - currentColorValue) > 25) {
     colorIndex+=1;
     if (colorIndex === colors.length ) {colorIndex = 0};
     document.querySelector('body').style.backgroundColor = colors[colorIndex];
