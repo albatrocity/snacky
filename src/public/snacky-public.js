@@ -81,7 +81,6 @@ let analyzeEvent = new Event('analyze');
 class AudioAnalyser extends EventEmitter {
   constructor(audioCtx, source) {
     super();
-    // this.source = audioCtx.createMediaElementSource(audio);
     source = audioCtx.createMediaElementSource(audio);
     this.analyser = audioCtx.createAnalyser();
     this.analyser.fftSize = 2048;
@@ -154,9 +153,6 @@ function queueTrack(track) {
   audio.addEventListener('ended', nextTrack);
   audio.addEventListener('canplaythrough', playAudio);
   audio.addEventListener('waiting', displayLoading);
-  // audio.addEventListener('progress', function(e) {
-  //   console.log(e);
-  // });
 };
 
 function displayLoading() {
@@ -167,7 +163,6 @@ function displayLoading() {
 function fadeIn() {
   let fadePoint = 0.5;
   let fadeAudio = setInterval(function () {
-    console.log(audio.volume);
     if ((audio.currentTime < fadePoint) && (audio.volume != 1.0)) {
         audio.volume += 0.1;
     }

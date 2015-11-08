@@ -12,7 +12,7 @@ router.get('/:id', function(req, res, next) {
   var params = {bucket: process.env['BUCKET_NAME'], key: filename};
   var imgStream = s3.getObject({
     Bucket: process.env['BUCKET_NAME'],
-    Key: filename
+    Key: "snacky/" +filename
   }).createReadStream();
 
   imgStream.pipe(res);
