@@ -217,12 +217,11 @@ function nextTrack() {
   } else {
     currentTrack++;
   };
-  if (currentTrack+1 === tracks.length ) {
+  if (currentTrack === tracks.length ) {
     currentTrack = 0;
     audioState = 'paused';
-  } else {
-    queueTrack(tracks[currentTrack]);
   }
+  queueTrack(tracks[currentTrack]);
   $nextControl.style.display = 'inline';
 }
 
