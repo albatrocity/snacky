@@ -1,14 +1,17 @@
 extends layout
 
 block content
-  h1= Snacky
-  svg#band_svg
+  svg#band_svg(alt="Snacky")
   #cover
   #overlay
     #controls
-      #nowPlaying
-      a#playPause(href='#') Play
-      a#playNext(href='#') Next
+      .col
+        a#playPause(href='#') &#9654;
+      .col
+        span#nowPlaying
+        a#playNext(href='#') &rarr;
+      .col
+        a#buy(href="http://highdiverecords.com" target="_blank") Buy the Album
   svg#title_svg
   audio(src="/mp3s/01_Halftime%20Show.mp3")
   #number

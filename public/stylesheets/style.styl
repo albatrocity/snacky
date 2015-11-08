@@ -14,12 +14,38 @@ a
 #overlay
   position: absolute
   width: 100%
-  height: 100%
+
+  bottom: 0
+  z-index: 3
+  background: rgba(0,0,0,.7);
+  vertical-align: middle
+  min-height: 4em;
 
 #controls
   position: relative
-  width: 40%
+  width: 100%
   margin: 0 auto
+  text-align: center
+  vertical-align: middle
+  .col
+    width: 30%
+    display: inline-block
+    vertical-align: middle
+    // min-height: 4em
+    line-height: 1.9em
+
+  a
+    padding: 1em
+    display: inline-block
+    font-weight: normal
+    text-decoration: none
+
+#nowPlaying
+  h4
+    font-size: 100%
+    display: inline-block
+    color: #fff
+    margin: 0
 
 #playPause, #nextTrack
   z-index: 2

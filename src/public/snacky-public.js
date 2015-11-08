@@ -1,8 +1,8 @@
 let bandSVG = Snap("#band_svg");
 let titleSVG = Snap("#title_svg");
 let coverSVG = Snap("#cover");
-bandSVG.attr({ viewBox: "-30 -30 380 230" })
-titleSVG.attr({ viewBox: "-30 -100 240 200" })
+bandSVG.attr({ viewBox: "-30 -10 340 200" })
+titleSVG.attr({ viewBox: "-30 -80 240 200" })
 
 let vol1_letters = ["vol1_v", "vol1_o", "vol1_l", "vol1_1"];
 Snap.load("/images/vol1.svg", function(svg) {
@@ -26,9 +26,9 @@ Snap.load("/images/snacky.svg", function(svg) {
 
 let mascot;
 const mascotCoords = {
-  scale: 3.8,
-  t1: 400,
-  t2:470,
+  scale: 3.7,
+  t1: 440,
+  t2: 470,
   r1: 0,
   r2: 0
 };
@@ -100,9 +100,10 @@ let currentAnalyser;
 const $playControl = document.querySelector("#playPause");
 const $nextControl = document.querySelector("#playNext");
 const $nowPlaying = document.querySelector("#nowPlaying");
+$nextControl.style.display = 'none';
 
 function displayTrackInfo(track) {
-  $nowPlaying.innerHTML = `<h3>${track.title}</h3>`
+  $nowPlaying.innerHTML = `<h4>${tracks.indexOf(track)+1}. ${track.title}</h4>`
 }
 
 function queueTrack(track) {
@@ -142,10 +143,11 @@ function nextTrack() {
     queueTrack(tracks[currentTrack]);
     $playControl.innerHTML = "Pause";
   }
+  $nextControl.style.display = 'inline';
 }
 
 function pauseTrack() {
-  $playControl.innerHTML = "Play";
+  $playControl.innerHTML = "&#9654";
   audio.pause();
   audioState = 'paused';
 }
@@ -199,10 +201,9 @@ function animate() {
     let rAngle = (index + anData[freq] - 50);
     if (rAngle < -30) {rAngle = -30};
     if (rAngle > 30) {rAngle = 30};
-    letter.animate({transform: "s"+ scaled + "r"+rAngle + "t10,10"}, 10);
+    letter.animate({transform: "s"+ scaled + "r"+rAngle + "t10,10"}, 15);
   });
 
-  // let scaled = anData[100]/10;
 
   let snareLevel = anData[250];
   scaleMascot(snareLevel/10);
@@ -212,16 +213,13 @@ function animate() {
 let currentMascotRotate = 0;
 let mascotRotateDir = 1;
 function scaleMascot(modifier) {
-  modifier = modifier || 0;
+  modifier = modifier || 1;
   let scale = mascotCoords.scale + (modifier/90);
   let t1 = mascotCoords.t1 - modifier;
   let t2 = mascotCoords.t2 - modifier;
   let r1 = mascotCoords.r1 - modifier;
-  // console.log(Math.abs(currentMascotRotate - r1) > 0.2);
   if (modifier > 10) {
-    // console.log(modifier);
-    console.log(Math.abs(currentMascotRotate - r1));
-    if (Math.abs(currentMascotRotate - r1) > 1.3) {
+    if (Math.abs(currentMascotRotate - r1) > 1.1) {
       if (mascotRotateDir === 1) {
         mascotRotateDir = -1;
       } else {
