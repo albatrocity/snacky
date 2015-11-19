@@ -37,9 +37,9 @@ Snap.load("/images/snacky.svg", function(svg) {
 
 let mascot;
 const mascotCoords = {
-  scale: 3.6,
-  t1: 440,
-  t2: 470,
+  scale: 3.4,
+  t1: 460,
+  t2: 520,
   r1: 0,
   r2: 0
 };
