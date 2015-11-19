@@ -7,16 +7,18 @@ svg {
   padding: 0;
 }
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  height: 100%;
-  margin: 0;
+  font: 14px 'Arvo', serif;
 }
 a {
   text-decoration: none;
   color: #00b7ff;
 }
+#dancing {
+  height: 100%;
+  margin: 0;
+}
 #overlay {
-  position: absolute;
+  position: fixed;
   width: 100%;
   bottom: 0;
   z-index: 3;
@@ -44,6 +46,7 @@ a {
 }
 #nowPlaying h4 {
   font-size: 100%;
+  font-weight: normal;
   display: inline-block;
   color: #fff;
   margin: 0;
@@ -83,7 +86,7 @@ svg {
 }
 svg#title_svg {
   margin: 0 auto;
-  top: 28%;
+  top: 35%;
   height: 200px;
   width: 100%;
   text-align: center;
@@ -112,4 +115,60 @@ svg#title_svg {
   display: block;
   text-align: center;
   color: #fff;
+}
+#info {
+  width: 40%;
+  min-width: 500px;
+  max-width: 600px;
+  margin: 3em auto;
+  padding: 2em 2em 8em 2em;
+  line-height: 1.4em;
+}
+#playPause {
+  animation: jump 2s forwards cubic-bezier(0.84, -0.54, 0.31, 1.19);
+}
+@-moz-keyframes jump {
+  0% {
+    transform: none;
+  }
+
+  50% {
+    transform: translateY(-5em) scale(1.5);
+  }
+}
+@-webkit-keyframes jump {
+  0% {
+    transform: none;
+  }
+
+  50% {
+    transform: translateY(-5em) scale(1.5);
+  }
+}
+@-o-keyframes jump {
+  0% {
+    transform: none;
+  }
+
+  50% {
+    transform: translateY(-5em) scale(1.5);
+  }
+}
+@-ms-keyframes jump {
+  0% {
+    transform: none;
+  }
+
+  50% {
+    transform: translateY(-5em) scale(1.5);
+  }
+}
+@keyframes jump {
+  0% {
+    transform: none;
+  }
+
+  50% {
+    transform: translateY(-5em) scale(1.5);
+  }
 }

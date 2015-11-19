@@ -1,19 +1,52 @@
 extends layout
 
 block content
-  svg#band_svg(alt="Snacky")
-  #cover
-  #overlay
-    #controls
-      .col
-        a#playPause(href='#') Play
-      .col
-        span#nowPlaying
-        a#playNext(href='#') &rarr;
-      .col
-        a#buy(href="http://highdiverecords.com" target="_blank") Buy the Album
-        a#toggleDance(href='#') Stop dancing
-  svg#title_svg
-  #fallback
-    .content
-  #number
+  #dancing
+    svg#band_svg(alt="Snacky")
+    #cover
+    #overlay
+      #controls
+        .col
+          a#playPause(href='#') Play
+        .col
+          span#nowPlaying
+          a#playNext(href='#') &rarr;
+        .col
+          a#buy(href="http://highdiverecords.com" target="_blank") Buy the Album
+          a#toggleDance(href='#') Stop dancing
+    svg#title_svg
+    #fallback
+      .content
+  #info
+    p Snacky is a recording project from Ross Brown and Ryan Carr. 
+      |Ross played synthesizers on all tracks, drums on track 3, and bongos on track 7. 
+      |Ryan played drums and percussion on everything else.
+      
+    h3 The Rules
+    ol
+      li Only analog synths and live drums/percussion
+      li Everything must be played by humans
+      li No sound is too cheesy
+      li No "presets"
+      
+    p 
+      |All songs written, recorded, and mixed in Ross' basement during the summer of 2015. 
+      |&copy;
+      span.year 2015
+      |  Bargain Hunt Music / ASCAP
+    p 
+      | Mastered by Mike Nolte at 
+      a(href='http://eurekamastering.com') Eureka Mastering
+      |.
+    p 
+      |Artwork by 
+      a(href="http://charliemylie.com") Charlie Mylie
+      |.
+    p 
+      | Released on 
+      a(href="http://highdiverecords.com") High Dive Records
+      |  - HDR018
+    
+  script.
+    var now = new Date;
+    document.querySelector('.year').innerHTML = now.getFullYear();
