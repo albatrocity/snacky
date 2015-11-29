@@ -53,9 +53,39 @@ Snap.load("/images/mascot_vector.svg", function(svg) {
 
 const tracks = [
   {
+    title: "Halftime Show",
+    src: "01_Halftime%20Show",
+    track_number: 1
+  },
+  {
+    title: "You're Preapproved!",
+    src: "02_You're%20Preapproved!",
+    track_number: 2
+  },
+  {
+    title: "Le Voyage Vers le Canape",
+    src: "03_Le%20Voyage%20Vers%20le%20Canape",
+    track_number: 3
+  },
+  {
     title: "Nugget",
     src: "04_Nugget",
     track_number: 4
+  },
+  {
+    title: "I Forgot to Get Toilet Paper",
+    src: "05_I%20Forgot%20to%20Get%20Toilet%20Paper",
+    track_number: 5
+  },
+  {
+    title: "Ryan's Lament",
+    src: "06_Ryan's%20Lament",
+    track_number: 6
+  },
+  {
+    title: "Warm Face After a Cold Day",
+    src: "07_Warm%20Face%20After%20a%20Cold%20Day",
+    track_number: 7
   }
 ];
 
@@ -199,8 +229,7 @@ function nextTrack() {
     audioState = 'paused';
   }
   queueTrack(tracks[currentTrack]);
-  // TODO: RE-ENABLE ON RELEASE!
-  // $nextControl.style.display = 'inline';
+  $nextControl.style.display = 'inline';
 }
 
 function pauseTrack() {
