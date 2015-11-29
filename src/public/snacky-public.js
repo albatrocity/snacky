@@ -53,32 +53,9 @@ Snap.load("/images/mascot_vector.svg", function(svg) {
 
 const tracks = [
   {
-    title: "Halftime Show",
-    src: "01_Halftime%20Show"
-  },
-  {
-    title: "You're Preapproved!",
-    src: "02_You're%20Preapproved!"
-  },
-  {
-    title: "Le Voyage Vers le Canape",
-    src: "03_Le%20Voyage%20Vers%20le%20Canape"
-  },
-  {
     title: "Nugget",
-    src: "04_Nugget"
-  },
-  {
-    title: "I Forgot to Get Toilet Paper",
-    src: "05_I%20Forgot%20to%20Get%20Toilet%20Paper"
-  },
-  {
-    title: "Ryan's Lament",
-    src: "06_Ryan's%20Lament"
-  },
-  {
-    title: "Warm Face After a Cold Day",
-    src: "07_Warm%20Face%20After%20a%20Cold%20Day"
+    src: "04_Nugget",
+    track_number: 4
   }
 ];
 
@@ -155,7 +132,7 @@ function toggleDancing(e) {
 }
 
 function displayTrackInfo(track) {
-  $nowPlaying.innerHTML = `<h4>${tracks.indexOf(track)+1}. ${track.title}</h4>`
+  $nowPlaying.innerHTML = `<h4>${track.track_number}. ${track.title}</h4>`
 }
 
 function queueTrack(track) {
@@ -222,7 +199,8 @@ function nextTrack() {
     audioState = 'paused';
   }
   queueTrack(tracks[currentTrack]);
-  $nextControl.style.display = 'inline';
+  // TODO: RE-ENABLE ON RELEASE!
+  // $nextControl.style.display = 'inline';
 }
 
 function pauseTrack() {

@@ -7,12 +7,12 @@ block content
     #overlay
       #controls
         .col
-          a#playPause(href='#') Play
+          a#playPause(href='#') Play single
         .col
           span#nowPlaying
           a#playNext(href='#') &rarr;
         .col
-          a#buy(href="http://highdiverecords.com" target="_blank") Buy the Album
+          //- a#buy(href="http://highdiverecords.com" target="_blank") Buy the Album
           a#toggleDance(href='#') Stop dancing
     svg#title_svg
     #fallback
@@ -39,13 +39,21 @@ block content
       a(href='http://eurekamastering.com') Eureka Mastering
       |.
     p 
-      |Artwork by 
+      a(href="http://ross-brown.s3.amazonaws.com/snacky/snacky_vol1_digital.jpg") Artwork
+      |  by 
       a(href="http://charliemylie.com") Charlie Mylie
-      |.
+      |. Photos by Carlos Lima.
     p 
-      | Cassette and Digital released on 
+      | Cassette and Digital coming soon to 
       a(href="http://highdiverecords.com") High Dive Records
       |  - HDR018
+      
+    p 
+      a(href="https://facebook.com/snackymusic") Facebook
+    
+    p
+      a(href="https://facebook.com/snackymusic")
+        img(src="http://ross-brown.s3.amazonaws.com/snacky/snacky_promo1.jpg" alt="Snacky")
   script.
     var now = new Date;
     document.querySelector('.year').innerHTML = now.getFullYear();
