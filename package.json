@@ -6,6 +6,9 @@
     "start": "node ./bin/www",
     "postinstall": "./node_modules/bower/bin/bower install; gulp build"
   },
+  "engines": {
+    "node": "6.11.1"
+  },
   "dependencies": {
     "aws-sdk": "^2.2.15",
     "basic-auth": "^1.0.3",
