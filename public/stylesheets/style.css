@@ -22,7 +22,7 @@ a {
   width: 100%;
   bottom: 0;
   z-index: 3;
-  background: rgba(0,0,0,0.7);
+  background: rgba(255,255,255,0.8);
   vertical-align: middle;
   min-height: 4em;
 }
@@ -48,7 +48,6 @@ a {
   font-size: 100%;
   font-weight: normal;
   display: inline-block;
-  color: #fff;
   margin: 0;
 }
 #playPause,
@@ -123,6 +122,9 @@ svg#title_svg {
   margin: 3em auto;
   padding: 2em 2em 8em 2em;
   line-height: 1.4em;
+}
+#info p img {
+  max-width: 100%;
 }
 #playPause {
   animation: jump 2s forwards cubic-bezier(0.84, -0.54, 0.31, 1.19);
